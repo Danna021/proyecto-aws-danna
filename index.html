@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard AWS - Danna</title>
+    <style>
+        /* Estilo General Pastel y Morado */
+        body { 
+            font-family: 'Segoe UI', sans-serif; 
+            background: #f3e5f5; 
+            display: flex; justify-content: center; align-items: center; 
+            height: 100vh; margin: 0; 
+        }
+
+        .card { 
+            background: white; padding: 40px; border-radius: 25px; 
+            box-shadow: 0 10px 30px rgba(149, 117, 205, 0.3); 
+            text-align: center; border: 2px solid #d1c4e9;
+            width: 450px; /* Un poco más ancho para el mensaje largo */
+        }
+
+        h1 { color: #6a1b9a; font-size: 26px; margin-bottom: 5px; }
+        .subtitle { color: #9575cd; font-size: 14px; margin-bottom: 25px; font-weight: bold; }
+
+        .button-group { display: flex; justify-content: center; gap: 15px; }
+
+        button { 
+            padding: 15px 25px; border: none; border-radius: 15px; 
+            color: white; font-weight: bold; cursor: pointer; 
+            transition: 0.3s; font-size: 14px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .prod { background-color: #ba68c8; }
+        .prod:hover { background-color: #9c27b0; transform: scale(1.05); }
+
+        .dev { background-color: #9575cd; }
+        .dev:hover { background-color: #673ab7; transform: scale(1.05); }
+
+        /* Cuadro de Respuesta */
+        #mensaje { 
+            margin-top: 30px; padding: 20px; border-radius: 15px;
+            background: #f8f1ff; color: #4a148c; font-size: 15px;
+            border: 1px dashed #ce93d8; line-height: 1.6;
+            min-height: 60px; display: flex; align-items: center; justify-content: center;
+        }
+
+        strong { color: #6a1b9a; }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h1>Dashboard AWS ☁️</h1>
+        <div class="subtitle">Software Development & Management - UTVT</div>
+        
+        <div class="button-group">
+            <button class="prod" onclick="consultar('prod')">CONSULTAR PROD</button>
+            <button class="dev" onclick="consultar('dev')">CONSULTAR DEV</button>
+        </div>
+
+        <div id="mensaje">Esperando consulta de entorno...</div>
+    </div>
+
+    <script>
+        async function consultar(env) {
+            const display = document.getElementById('mensaje');
+            display.innerHTML = "<em>Conectando con la nube...</em>";
+            
+            // Dirección de tu API con el stage (prod/dev)
+            const apiURL = `https://zksyzyf2y2.execute-api.us-east-2.amazonaws.com/${env}/hola`;
+
+            try {
+                // Petición simple para evitar bloqueos
+                const response = await fetch(apiURL);
+                
+                if (!response.ok) throw new Error('Error en el servidor');
+
+                const data = await response.json();
+                
+                // Mostramos el mensaje exacto que configuramos en la Lambda
+                display.innerHTML = `✅ <strong>${data.message}</strong>`;
+                
+            } catch (err) {
+                display.innerHTML = "❌ <strong>Error:</strong> No se pudo conectar con el entorno " + env.toUpperCase() + ". Revisa el Deploy en AWS.";
+                console.error("Error detallado:", err);
+            }
+        }
+    </script>
+</body>
+</html>
